@@ -114,6 +114,9 @@
   .opt.sel .pts{color:var(--royal-bright);border-color:var(--royal-dim)}
   .multi-hint{font-size:12px;color:var(--royal-bright);margin:-12px 0 16px;font-family:'JetBrains Mono',monospace;letter-spacing:.04em;display:flex;align-items:center;gap:7px}
   .multi-hint::before{content:"";width:13px;height:13px;border-radius:4px;border:1.5px solid var(--royal-bright);flex:0 0 13px}
+  .single-hint{font-size:12px;color:var(--silver-2);margin:-12px 0 16px;font-family:'JetBrains Mono',monospace;letter-spacing:.04em;display:flex;align-items:center;gap:7px}
+  .single-hint::before{content:"";width:13px;height:13px;border-radius:50%;border:1.5px solid var(--silver-2);flex:0 0 13px}
+  .opt.single-opt .tick{border-radius:50%}
   .multi-note{font-size:12px;color:var(--muted-2);margin-top:14px;font-family:'JetBrains Mono',monospace}
   .q-nav{display:flex;justify-content:space-between;gap:12px;padding:0 28px 28px}
 
@@ -126,6 +129,14 @@
   .gauge .score .den{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--muted-2);margin-top:6px;letter-spacing:.06em}
   .tier-badge{display:inline-flex;align-items:center;gap:9px;margin-top:4px;font-family:'Archivo',sans-serif;font-weight:800;font-size:15px;letter-spacing:.14em;text-transform:uppercase;padding:9px 18px;border-radius:99px;border:1px solid}
   .tier-badge .dot{width:8px;height:8px;border-radius:99px;background:currentColor}
+  .tier-context{margin-top:14px;font-size:12.5px;color:var(--muted);font-family:'JetBrains Mono',monospace;letter-spacing:.02em;text-align:center;line-height:1.6}
+  .tier-context b{color:var(--text);font-weight:700}
+  .tier-context .adj{display:inline-block;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--royal-bright);border:1px solid var(--royal-dim);border-radius:6px;padding:2px 7px;margin-left:4px}
+  .caprow{display:flex;gap:10px;flex-wrap:wrap}
+  .capcell{flex:1;min-width:120px;background:rgba(4,14,38,.5);border:1px solid var(--line);border-radius:11px;padding:13px 15px;display:flex;flex-direction:column;gap:5px}
+  .capk{font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted-2);font-weight:600}
+  .capv{font-size:15px;font-weight:700;font-family:'Archivo',sans-serif}
+  .capnote{margin-top:12px;color:var(--muted);font-size:13px;line-height:1.6}
 
   .price{text-align:center;margin:24px 0 4px;padding:22px;border-radius:16px;background:linear-gradient(180deg,rgba(58,116,232,.14),rgba(58,116,232,.03));border:1px solid var(--royal-dim)}
   .price .lbl{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--royal-bright);margin-bottom:10px}
@@ -194,7 +205,7 @@
   <div class="card">
     <section id="screen-start" class="start">
       <div class="eyebrow">Ferramenta interna · apoio à negociação</div>
-      <h2>Diagnóstico em 9 etapas.<br><span>Faixa de investimento na medida certa.</span></h2>
+      <h2>Diagnóstico em 10 etapas.<br><span>Faixa de investimento na medida certa.</span></h2>
       <p class="lead">Responda às perguntas com base na realidade da clínica. Ao final, você recebe a pontuação, a classificação Falcon, os principais gargalos e a faixa de investimento recomendada — pronta para usar na conversa comercial.</p>
       <div class="field">
         <label for="clinicName">Nome da clínica <span style="color:var(--muted-2);text-transform:none;letter-spacing:0">(opcional)</span></label>
@@ -207,7 +218,7 @@
 
     <section id="screen-quiz" class="hide">
       <div class="topbar">
-        <span class="step-count">ETAPA <b id="stepNum">1</b> / 9</span>
+        <span class="step-count">ETAPA <b id="stepNum">1</b> / 10</span>
         <span class="pts-live">Pontos: <b id="ptsLive">0</b></span>
       </div>
       <div class="track"><div class="track-fill" id="trackFill"></div></div>
@@ -235,6 +246,7 @@ const QUESTIONS = [
   {kicker:"Comprometimento do proprietário",title:"Qual o nível de comprometimento do proprietário?",hint:"Avalie:",bullets:["Participa da reunião?","Está aberto a mudanças?","Demonstra urgência?","Disposto a implementar processos?"],type:"multi",options:[{label:"Baixo",pts:0},{label:"Médio",pts:10},{label:"Alto",pts:20}]},
   {kicker:"Foco de procedimentos",title:"Quais procedimentos representam o foco principal da clínica?",hint:"Pode selecionar mais de um. A pontuação soma até no máximo 20 pontos.",type:"multi",cap:20,options:[{label:"Limpeza / Clínica Geral",pts:0},{label:"Ortodontia",pts:5},{label:"Prótese",pts:10},{label:"Facetas",pts:10},{label:"Implantes",pts:15},{label:"Harmonização Facial",pts:10}]},
   {kicker:"Objetivo · 12 meses",title:"Qual o objetivo principal da clínica nos próximos 12 meses?",type:"multi",options:[{label:"Organizar a operação",pts:5},{label:"Gerar mais pacientes",pts:10},{label:"Aumentar faturamento",pts:15},{label:"Escalar a clínica",pts:20},{label:"Abrir nova unidade",pts:25}]},
+  {kicker:"Capacidade de investimento",title:"Qual o faturamento mensal médio da clínica?",hint:"Define o teto realista de investimento agora — separado do potencial. Não soma pontos.",type:"single",capacity:true,ceiling:[0,1,2,3],options:[{label:"Até R$ 20 mil",pts:0},{label:"R$ 20 mil a R$ 40 mil",pts:0},{label:"R$ 40 mil a R$ 80 mil",pts:0},{label:"Acima de R$ 80 mil",pts:0}]},
 ];
 const TIERS = [
   {min:0,max:99,name:"Falcon Start",color:"#9FB0CC",profile:"Clínica pequena ou pouco estruturada.",range:"R$ 1.200 a R$ 1.800",impl:"Opcional"},
@@ -247,7 +259,7 @@ const state={answers:{},idx:0,clinic:""};
 const $=s=>document.querySelector(s);
 const checkSVG='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l4.5 4.5L19 7"/></svg>';
 
-function qScore(i){const a=state.answers[i];if(a===undefined)return 0;const q=QUESTIONS[i];if(q.type==="multi"){let s=a.reduce((acc,k)=>acc+q.options[k].pts,0);return q.cap?Math.min(s,q.cap):s;}return q.options[a].pts;}
+function qScore(i){const a=state.answers[i];if(a===undefined)return 0;const q=QUESTIONS[i];if(q.capacity)return 0;if(q.type==="multi"){let s=a.reduce((acc,k)=>acc+q.options[k].pts,0);return q.cap?Math.min(s,q.cap):s;}return q.options[a].pts;}
 function totalScore(){let t=0;for(let i=0;i<QUESTIONS.length;i++)t+=qScore(i);return t;}
 function getTier(s){return TIERS.find(t=>s>=t.min&&s<=t.max);}
 
@@ -261,9 +273,10 @@ function renderQuestion(){
   let hint="";
   if(q.hint)hint=`<p class="hint">${q.hint}${q.bullets?`<ul>${q.bullets.map(b=>`<li>${b}</li>`).join("")}</ul>`:""}</p>`;
   const sel=state.answers[i];
-  const opts=q.options.map((o,k)=>{const isSel=q.type==="multi"?(Array.isArray(sel)&&sel.includes(k)):sel===k;return `<button class="opt ${isSel?'sel':''}" data-k="${k}"><span class="tick">${checkSVG}</span><span class="label-txt">${o.label}</span><span class="pts">${o.pts>0?'+':''}${o.pts}</span></button>`;}).join("");
-  const subhint=`<p class="multi-hint">Selecione uma ou mais opções.</p>`;
-  $("#qBody").innerHTML=`<div class="q-kicker">${q.kicker}</div><h3>${q.title}</h3>${hint}${subhint}<div class="opts">${opts}</div><div class="multi-note">${q.cap?`Pontuação desta etapa: ${qScore(i)} / ${q.cap} (teto)`:`Pontuação desta etapa: ${qScore(i)} pts`}</div>`;
+  const opts=q.options.map((o,k)=>{const isSel=q.type==="multi"?(Array.isArray(sel)&&sel.includes(k)):sel===k;const ptsTag=q.capacity?'':`<span class="pts">${o.pts>0?'+':''}${o.pts}</span>`;return `<button class="opt ${q.type!=="multi"?'single-opt':''} ${isSel?'sel':''}" data-k="${k}"><span class="tick">${checkSVG}</span><span class="label-txt">${o.label}</span>${ptsTag}</button>`;}).join("");
+  const subhint=q.type==="multi"?`<p class="multi-hint">Selecione uma ou mais opções.</p>`:`<p class="single-hint">Selecione uma opção.</p>`;
+  const note=q.capacity?'':`<div class="multi-note">${q.cap?`Pontuação desta etapa: ${qScore(i)} / ${q.cap} (teto)`:`Pontuação desta etapa: ${qScore(i)} pts`}</div>`;
+  $("#qBody").innerHTML=`<div class="q-kicker">${q.kicker}</div><h3>${q.title}</h3>${hint}${subhint}<div class="opts">${opts}</div>${note}`;
   $("#qBody").querySelectorAll(".opt").forEach(el=>el.addEventListener("click",()=>selectOption(parseInt(el.dataset.k))));
 }
 function selectOption(k){
@@ -313,13 +326,24 @@ function buildDiagnosis(){
   else if(tier.name==="Falcon Growth")summary+="Há fundação para crescer; o trabalho deve estruturar o comercial e ampliar a geração de pacientes. ";
   else if(tier.name==="Falcon Scale")summary+="A estrutura permite acelerar: o esforço se concentra em escala, conversão e aumento de ticket. ";
   else summary+="Operação avançada e pronta para expansão — o trabalho deve sustentar escala e novos patamares de faturamento. ";
-  const lowFinance=tp(2)!==null&&tp(2)<=5,highCommit=tp(6)===20,highGrowth=tp(5)===25;
+  // ---- eixo financeiro: faturamento define o teto realista ----
+  const capQ=QUESTIONS.findIndex(q=>q.capacity);
+  const capSel=state.answers[capQ];
+  const potIdx=TIERS.indexOf(tier);
+  const capCeil=(capSel===undefined)?potIdx:QUESTIONS[capQ].ceiling[capSel];
+  const finalIdx=Math.min(potIdx,capCeil);
+  const finalTier=TIERS[finalIdx];
+  const constrained=capCeil<potIdx;
+  const capLabel=(capSel===undefined)?null:QUESTIONS[capQ].options[capSel].label;
+  if(constrained)summary+=`Porém, o faturamento atual (${capLabel}) comporta o nível ${finalTier.name}. Comece por essa faixa e amplie o investimento conforme os resultados aparecem.`;
+  const lowFinance=capCeil<=1,highCommit=tp(6)===20,highGrowth=tp(5)===25;
   const goodStructure=(tp(0)||0)>=15&&(tp(1)||0)>=10&&(tp(3)||0)>=10&&(tp(2)||0)>=10&&((tp(5)||0)>=15||highTicket);
   let impl;
-  if(lowFinance&&highCommit&&highGrowth)impl={tag:"Recomendação de implementação",title:"Isentar a taxa de implementação",txt:"A clínica tem baixa capacidade financeira no momento, mas comprometimento e potencial de crescimento altos. Sugira isentar a taxa de implementação e diluir o esforço dentro de um contrato mínimo de 6 meses — isso reduz a barreira de entrada sem perder o valor do trabalho."};
-  else if(goodStructure)impl={tag:"Recomendação de implementação",title:"Cobrar implementação além da mensalidade",txt:"A clínica demonstra boa estrutura, equipe, investimento e potencial de expansão. Recomende cobrar a taxa de implementação somada à mensalidade — o porte e a maturidade justificam o investimento inicial dedicado à montagem do processo."};
-  else{const map={"Opcional":"A implementação é opcional para este perfil. Avalie cobrar apenas se houver escopo de setup relevante; caso contrário, priorize fechar a mensalidade.","Avaliar caso a caso":"Avalie a cobrança de implementação caso a caso, conforme o escopo de setup e o fôlego financeiro da clínica.","Recomendada":"Implementação recomendada: o porte da clínica justifica um setup estruturado cobrado à parte.","Fortemente recomendada":"Implementação fortemente recomendada: a complexidade e o potencial exigem um setup dedicado, cobrado além da mensalidade."};impl={tag:"Recomendação de implementação",title:"Implementação "+tier.impl.toLowerCase(),txt:map[tier.impl]};}
-  return {s,tier,gar,opp,summary,impl};
+  if(constrained&&highCommit)impl={tag:"Recomendação de implementação",title:"Isentar implementação e diluir em 6 meses",txt:`Alto comprometimento${highGrowth?' e alto potencial':''}, mas caixa apertado para o tamanho da oportunidade. Isente a taxa de implementação e dilua o esforço num contrato mínimo de 6 meses, começando no nível ${finalTier.name} — reduz a barreira de entrada sem perder o valor do trabalho.`};
+  else if(constrained)impl={tag:"Recomendação de implementação",title:"Entrar enxuto, sem implementação agora",txt:`O potencial é de ${tier.name}, mas o faturamento comporta ${finalTier.name}. Não cobre implementação neste momento: entre no piso da faixa, mostre resultado e revise o investimento conforme a clínica cresce.`};
+  else if(goodStructure&&finalIdx>=2)impl={tag:"Recomendação de implementação",title:"Cobrar implementação além da mensalidade",txt:"A clínica tem boa estrutura, potencial e faturamento que sustenta o investimento. Recomende cobrar a taxa de implementação somada à mensalidade — o porte e a maturidade justificam o setup dedicado à montagem do processo."};
+  else{const map={"Opcional":"A implementação é opcional para este perfil. Avalie cobrar apenas se houver escopo de setup relevante; caso contrário, priorize fechar a mensalidade.","Avaliar caso a caso":"Avalie a cobrança de implementação caso a caso, conforme o escopo de setup e o fôlego financeiro da clínica.","Recomendada":"Implementação recomendada: o porte da clínica justifica um setup estruturado cobrado à parte.","Fortemente recomendada":"Implementação fortemente recomendada: a complexidade e o potencial exigem um setup dedicado, cobrado além da mensalidade."};impl={tag:"Recomendação de implementação",title:"Implementação "+finalTier.impl.toLowerCase(),txt:map[finalTier.impl]};}
+  return {s,tier,finalTier,potentialTier:tier,constrained,capLabel,capCeilName:TIERS[capCeil].name,gar,opp,summary,impl};
 }
 
 function polar(cx,cy,r,deg){const a=(deg-90)*Math.PI/180;return [cx+r*Math.cos(a),cy+r*Math.sin(a)];}
@@ -335,14 +359,23 @@ function showResult(){
   $("#trackFill").style.width="100%";
   $("#screen-quiz").classList.add("hide");
   const R=$("#screen-result");R.classList.remove("hide");
-  const rows=QUESTIONS.map((q,i)=>`<div class="row"><span class="q-lbl">${i+1}. ${q.kicker}</span><span class="q-val">${qScore(i)} pts</span></div>`).join("");
+  const rows=QUESTIONS.map((q,i)=>q.capacity?'':`<div class="row"><span class="q-lbl">${i+1}. ${q.kicker}</span><span class="q-val">${qScore(i)} pts</span></div>`).join("");
   R.innerHTML=`
     <div class="eyebrow">${state.clinic?'Diagnóstico · '+state.clinic:'Diagnóstico Falcon'}</div>
     <div class="gauge-wrap">
-      <div class="gauge">${gaugeSVG(d.s,d.tier.color)}<div class="score"><div class="num" id="scoreNum">0</div><div class="den">de ${MAX} pontos</div></div></div>
-      <div class="tier-badge" style="color:${d.tier.color};border-color:${d.tier.color}55;background:${d.tier.color}14"><span class="dot"></span>${d.tier.name}</div>
+      <div class="gauge">${gaugeSVG(d.s,d.finalTier.color)}<div class="score"><div class="num" id="scoreNum">0</div><div class="den">de ${MAX} pontos</div></div></div>
+      <div class="tier-badge" style="color:${d.finalTier.color};border-color:${d.finalTier.color}55;background:${d.finalTier.color}14"><span class="dot"></span>${d.finalTier.name}</div>
+      ${d.constrained?`<div class="tier-context">Potencial: <b>${d.potentialTier.name}</b> &nbsp;·&nbsp; Recomendado agora: <b style="color:${d.finalTier.color}">${d.finalTier.name}</b> <span class="adj">ajustado pelo faturamento</span></div>`:`<div class="tier-context">Potencial e capacidade financeira alinhados neste nível</div>`}
     </div>
-    <div class="price"><div class="lbl">Faixa de investimento recomendada</div><div class="val">${d.tier.range} <small>/ mês</small></div><div class="sub">Perfil: ${d.tier.profile}</div></div>
+    <div class="price"><div class="lbl">Faixa de investimento recomendada</div><div class="val">${d.finalTier.range} <small>/ mês</small></div><div class="sub">${d.constrained?`Faixa ajustada ao faturamento atual — o perfil tem potencial de ${d.potentialTier.range}/mês conforme a clínica cresce.`:'Perfil: '+d.finalTier.profile}</div></div>
+    <div class="sec"><div class="sec-title"><span class="bar"></span>Capacidade de investimento</div>
+      <div class="caprow">
+        <div class="capcell"><span class="capk">Faturamento informado</span><span class="capv">${d.capLabel||'—'}</span></div>
+        <div class="capcell"><span class="capk">Teto sustentável</span><span class="capv">${d.capCeilName}</span></div>
+        <div class="capcell"><span class="capk">Recomendação</span><span class="capv" style="color:${d.finalTier.color}">${d.finalTier.name}</span></div>
+      </div>
+      <p class="capnote">Referência: uma assessoria costuma caber em torno de 5% a 12% do faturamento mensal. ${d.constrained?'O potencial supera o caixa atual — priorize entrada acessível e crescimento conjunto.':'O faturamento sustenta o nível indicado pelo potencial.'}</p>
+    </div>
     <div class="sec"><div class="sec-title"><span class="bar"></span>Diagnóstico resumido</div><p class="diag">${d.summary}</p></div>
     <div class="sec"><div class="sec-title"><span class="bar"></span>Principais gargalos</div><div class="list">${d.gar.map(g=>`<div class="item gar"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/></svg><span>${g}</span></div>`).join("")}</div></div>
     <div class="sec"><div class="sec-title"><span class="bar"></span>Oportunidades de crescimento</div><div class="list">${d.opp.map(o=>`<div class="item opp"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 7-8"/><path d="M17 7h4v4"/></svg><span>${o}</span></div>`).join("")}</div></div>
